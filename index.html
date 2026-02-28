@@ -83,9 +83,6 @@ body{
   display:none;
   padding:10px;
 }
-  <div class="menuItem" onclick="changeWallpaper(1)">Dark</div>
-<div class="menuItem" onclick="changeWallpaper(2)">Ocean</div>
-<div class="menuItem" onclick="changeWallpaper(3)">Sunset</div>
 .menuItem{
   cursor:pointer;
   margin:5px 0;
@@ -98,7 +95,7 @@ body{
 <div id="boot"></div>
 
 <div id="desktop">
-  <div class="icon" onclick="openAbout()">📂 About</div>
+  <div class="icon" onclick="openAbout()">🐽 About</div>
   <div class="icon" onclick="openNotepad()">📝 Notepad</div>
 </div>
 
@@ -111,20 +108,24 @@ body{
   <div class="menuItem" onclick="openNotepad()">Notepad</div>
 </div>
 
+<div class="menuItem" onclick="changeWallpaper(1)">Red</div>
+<div class="menuItem" onclick="changeWallpaper(2)">Blue</div>
+<div class="menuItem" onclick="changeWallpaper(3)">Green</div>
 <script>
-  function changeWallpaper(type){
-  if(type === 1){
-    desktop.style.background = "linear-gradient(135deg,#1a1a1a,#333)";
-  }
-  if(type === 2){
-    desktop.style.background = "linear-gradient(135deg,#002b36,#073642)";
-  }
-  if(type === 3){
-    desktop.style.background = "linear-gradient(135deg,#3a1c71,#d76d77,#ffaf7b)";
-  }
-}
 var boot = document.getElementById("boot");
 var desktop = document.getElementById("desktop");
+
+function changeWallpaper(type){
+  if(type === 1){
+    desktop.style.background = "red";
+  }
+  if(type === 2){
+    desktop.style.background = "blue";
+  }
+  if(type === 3){
+    desktop.style.background = "green";
+  }
+}
 
 function printBoot(text){
   boot.innerHTML += text + "<br>";
@@ -164,3 +165,6 @@ function toggleStart(){
 
 </body>
 </html>
+
+
+
