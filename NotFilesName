@@ -1,22 +1,55 @@
 <!DOCTYPE html>
 <html>
-<body style="background:black;color:lime;font-family:monospace;">
-<div id="screen">Welcome to AkabekoOS<br></div>
-<input id="cmd" autofocus style="background:black;color:lime;border:none;">
+<head>
+<meta charset="UTF-8">
+<title>cha-syuOS</title>
+</head>
+
+<body style="margin:0;background:black;color:lime;font-family:monospace;">
+
+<div id="screen" style="padding:10px;">
+cha-syuOS v0.1<br>
+Booting Web Kernel...<br>
+Type "help" to begin.<br><br>
+</div>
+
+<input id="cmd" autofocus 
+style="width:100%;background:black;color:lime;border:none;outline:none;font-family:monospace;">
 
 <script>
 const screen = document.getElementById("screen");
 const cmd = document.getElementById("cmd");
 
+function print(text){
+  screen.innerHTML += text + "<br>";
+  window.scrollTo(0, document.body.scrollHeight);
+}
+
 cmd.addEventListener("keydown", function(e){
   if(e.key === "Enter"){
-    screen.innerHTML += "> " + cmd.value + "<br>";
-    if(cmd.value === "help"){
-      screen.innerHTML += "Commands: help, about<br>";
+    let input = cmd.value;
+    print("> " + input);
+
+    if(input === "help"){
+      print("Commands: help, about, clear, echo");
     }
-    cmd.value="";
+    else if(input === "about"){
+      print("cha-syuOS running on Web Kernel.");
+    }
+    else if(input === "clear"){
+      screen.innerHTML = "";
+    }
+    else if(input.startsWith("echo ")){
+      print(input.slice(5));
+    }
+    else{
+      print("Command not found.");
+    }
+
+    cmd.value = "";
   }
 });
 </script>
+
 </body>
 </html>
