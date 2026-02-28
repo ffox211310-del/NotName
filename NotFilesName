@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<body style="background:black;color:lime;font-family:monospace;">
+<div id="screen">Welcome to AkabekoOS<br></div>
+<input id="cmd" autofocus style="background:black;color:lime;border:none;">
+
+<script>
+const screen = document.getElementById("screen");
+const cmd = document.getElementById("cmd");
+
+cmd.addEventListener("keydown", function(e){
+  if(e.key === "Enter"){
+    screen.innerHTML += "> " + cmd.value + "<br>";
+    if(cmd.value === "help"){
+      screen.innerHTML += "Commands: help, about<br>";
+    }
+    cmd.value="";
+  }
+});
+</script>
+</body>
+</html>
