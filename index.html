@@ -7,83 +7,145 @@
 <style>
 body{
   margin:0;
-  font-family:monospace;
+  font-family:Segoe UI, sans-serif;
   background:black;
+  overflow:hidden;
+}
+
+/* Boot */
+#boot{
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:40px;
+  color:white;
+  background:black;
+  letter-spacing:3px;
+}
+
+/* Login */
+#login{
+  display:none;
+  height:100vh;
+  background:linear-gradient(135deg,#141e30,#243b55);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
   color:white;
 }
 
-#boot{
-  padding:20px;
+#login input{
+  padding:10px;
+  border:none;
+  border-radius:6px;
+  margin:10px;
 }
 
-#login{
-  display:none;
-  text-align:center;
-  margin-top:100px;
+#login button{
+  padding:10px 20px;
+  border:none;
+  border-radius:6px;
+  background:#00c6ff;
+  color:white;
+  cursor:pointer;
 }
 
+/* Desktop */
 #desktop{
   display:none;
   height:100vh;
-  background:linear-gradient(135deg,#1a1a1a,#333);
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
   position:relative;
+  backdrop-filter:blur(10px);
 }
 
+/* Taskbar */
 #taskbar{
   position:absolute;
-  bottom:0;
-  width:100%;
-  height:40px;
-  background:#111;
+  bottom:10px;
+  left:50%;
+  transform:translateX(-50%);
+  width:60%;
+  height:50px;
+  background:rgba(255,255,255,0.1);
+  backdrop-filter:blur(10px);
+  border-radius:20px;
   display:flex;
   align-items:center;
+  justify-content:center;
+  box-shadow:0 0 20px rgba(0,0,0,0.4);
 }
 
 #startBtn{
-  padding:8px;
-  background:#222;
+  padding:10px 20px;
+  background:rgba(255,255,255,0.2);
+  border-radius:12px;
   cursor:pointer;
+  transition:0.2s;
+  color:white;
 }
 
+#startBtn:hover{
+  background:rgba(255,255,255,0.4);
+}
+
+/* Start Menu */
 #startMenu{
   position:absolute;
-  bottom:40px;
-  left:0;
-  background:#222;
+  bottom:70px;
+  left:50%;
+  transform:translateX(-50%);
+  background:rgba(0,0,0,0.6);
+  backdrop-filter:blur(15px);
+  border-radius:15px;
+  padding:15px;
   display:none;
-  padding:10px;
+  color:white;
+  box-shadow:0 0 20px rgba(0,0,0,0.5);
 }
 
 .menuItem{
-  padding:5px;
+  padding:8px 20px;
+  border-radius:10px;
   cursor:pointer;
+  transition:0.2s;
 }
 
+.menuItem:hover{
+  background:rgba(255,255,255,0.2);
+}
+
+/* Window */
 .window{
   position:absolute;
-  top:100px;
-  left:100px;
-  width:300px;
-  background:#111;
-  border:1px solid #555;
-  padding:10px;
+  top:120px;
+  left:120px;
+  width:320px;
+  background:rgba(255,255,255,0.1);
+  backdrop-filter:blur(20px);
+  border-radius:15px;
+  padding:15px;
+  color:white;
+  box-shadow:0 0 30px rgba(0,0,0,0.5);
 }
 </style>
 </head>
 
 <body>
 
-<div id="boot"></div>
+<div id="boot">cha-syuOS</div>
 
 <div id="login">
-  <h2>cha-syuOS Login</h2>
-  <input type="password" id="password" placeholder="password">
-  <button onclick="login()">Enter</button>
+  <h2>Welcome to cha-syuOS</h2>
+  <input type="password" id="password" placeholder="Password">
+  <button onclick="login()">Login</button>
 </div>
 
 <div id="desktop">
   <div id="taskbar">
-    <div id="startBtn" onclick="toggleStart()">☰ Start</div>
+    <div id="startBtn" onclick="toggleStart()">Start</div>
   </div>
 
   <div id="startMenu">
@@ -96,82 +158,49 @@ body{
 </div>
 
 <script>
-var boot = document.getElementById("boot");
-var loginScreen = document.getElementById("login");
-var desktop = document.getElementById("desktop");
+var boot=document.getElementById("boot");
+var loginScreen=document.getElementById("login");
+var desktop=document.getElementById("desktop");
 
-boot.innerHTML = "Booting cha-syuOS...<br>";
-setTimeout(function(){
+setTimeout(()=>{
   boot.style.display="none";
-  loginScreen.style.display="block";
+  loginScreen.style.display="flex";
 },1500);
 
 function login(){
-  var pass = document.getElementById("password").value;
-  if(pass === "ramen"){
+  if(document.getElementById("password").value==="ramen"){
     loginScreen.style.display="none";
     desktop.style.display="block";
-    loadWallpaper();
   }else{
     alert("Wrong password");
   }
 }
 
 function toggleStart(){
-  var menu = document.getElementById("startMenu");
-  if(menu.style.display === "block"){
-    menu.style.display="none";
-  }else{
-    menu.style.display="block";
-  }
-}
-
-function openAbout(){
-  createWindow("About","cha-syuOS v1.2<br>Made by legend.");
-}
-
-function openNotepad(){
-  var content = localStorage.getItem("note") || "";
-  createWindow("Notepad",
-    "<textarea id='noteArea' style='width:100%;height:100px;'>"+content+
-    "</textarea><br><button onclick='saveNote()'>Save</button>"
-  );
-}
-
-function saveNote(){
-  var text = document.getElementById("noteArea").value;
-  localStorage.setItem("note",text);
-  alert("Saved!");
+  var menu=document.getElementById("startMenu");
+  menu.style.display=(menu.style.display==="block")?"none":"block";
 }
 
 function createWindow(title,content){
-  var win = document.createElement("div");
+  var win=document.createElement("div");
   win.className="window";
   win.innerHTML="<b>"+title+"</b><br>"+content+
   "<br><button onclick='this.parentElement.remove()'>Close</button>";
   desktop.appendChild(win);
 }
 
-function changeWallpaper(type){
-  if(type===1){
-    desktop.style.background="linear-gradient(135deg,#1a1a1a,#333)";
-    localStorage.setItem("wall",1);
-  }
-  if(type===2){
-    desktop.style.background="linear-gradient(135deg,#002b36,#073642)";
-    localStorage.setItem("wall",2);
-  }
-  if(type===3){
-    desktop.style.background="linear-gradient(135deg,#3a1c71,#d76d77,#ffaf7b)";
-    localStorage.setItem("wall",3);
-  }
+function openAbout(){
+  createWindow("About","cha-syuOS UI v2<br>Glass Edition");
 }
 
-function loadWallpaper(){
-  var saved = localStorage.getItem("wall");
-  if(saved){
-    changeWallpaper(parseInt(saved));
-  }
+function openNotepad(){
+  createWindow("Notepad","<textarea style='width:100%;height:100px;'></textarea>");
+}
+
+function changeWallpaper(type){
+  if(type===1) desktop.style.background="linear-gradient(135deg,#0f2027,#203a43,#2c5364)";
+  if(type===2) desktop.style.background="linear-gradient(135deg,#1c92d2,#f2fcfe)";
+  if(type===3) desktop.style.background="linear-gradient(135deg,#ff512f,#dd2476)";
 }
 </script>
 
