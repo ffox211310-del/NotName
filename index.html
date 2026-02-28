@@ -3,63 +3,149 @@
 <head>
 <meta charset="UTF-8">
 <title>cha-syuOS</title>
-</head>
 
-<body style="margin:0;background:black;color:lime;font-family:monospace;">
-
-<div id="screen" style="padding:10px;"></div>
-
-<input id="cmd" autofocus 
-style="width:100%;background:black;color:lime;border:none;outline:none;font-family:monospace;display:none;">
-
-<script>
-var screen = document.getElementById("screen");
-var cmd = document.getElementById("cmd");
-
-function print(text){
-  screen.innerHTML += text + "<br>";
-  window.scrollTo(0, document.body.scrollHeight);
+<style>
+body{
+  margin:0;
+  overflow:hidden;
+  font-family:sans-serif;
 }
 
-print("Booting system...");
+#boot{
+  position:fixed;
+  width:100vw;
+  height:100vh;
+  background:black;
+  color:lime;
+  padding:20px;
+}
 
-setTimeout(function(){
-  print("Loading kernel...");
-}, 800);
+#desktop{
+  display:none;
+  width:100vw;
+  height:100vh;
+  background:linear-gradient(135deg,#1a1a1a,#333);
+  position:relative;
+}
 
-setTimeout(function(){
-  print("Initializing modules...");
-}, 1600);
+.icon{
+  color:white;
+  margin:20px;
+  cursor:pointer;
+}
 
-setTimeout(function(){
-  print("");
-  print("=== cha-syuOS ===");
-  print("Type 'help' to begin.");
-  cmd.style.display = "block";
-  cmd.focus();
-}, 2400);
+.window{
+  width:300px;
+  background:white;
+  position:absolute;
+  top:120px;
+  left:120px;
+  border-radius:8px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.5);
+}
 
-cmd.addEventListener("keydown", function(e){
-  if(e.key === "Enter"){
-    var input = cmd.value;
-    print("> " + input);
+.titlebar{
+  background:#222;
+  color:white;
+  padding:8px;
+  display:flex;
+  justify-content:space-between;
+}
 
-    if(input === "help"){
-      print("Commands: help, about, clear");
-    }
-    else if(input === "about"){
-      print("cha-syuOS running on Web Kernel.");
-    }
-    else if(input === "clear"){
-      screen.innerHTML = "";
-    }
-    else{
-      print("Command not found.");
-    }
+.content{
+  padding:10px;
+  color:black;
+}
 
-    cmd.value = "";
-  }
-});
+#taskbar{
+  position:fixed;
+  bottom:0;
+  width:100%;
+  height:40px;
+  background:#111;
+  color:white;
+  display:flex;
+  align-items:center;
+}
+
+#startBtn{
+  padding:10px;
+  cursor:pointer;
+}
+
+#startMenu{
+  position:fixed;
+  bottom:40px;
+  left:0;
+  width:150px;
+  background:#222;
+  color:white;
+  display:none;
+  padding:10px;
+}
+.menuItem{
+  cursor:pointer;
+  margin:5px 0;
+}
+</style>
+</head>
+
+<body>
+
+<div id="boot"></div>
+
+<div id="desktop">
+  <div class="icon" onclick="openAbout()">📂 About</div>
+  <div class="icon" onclick="openNotepad()">📝 Notepad</div>
+</div>
+
+<div id="taskbar">
+  <div id="startBtn" onclick="toggleStart()">☰ Start</div>
+</div>
+
+<div id="startMenu">
+  <div class="menuItem" onclick="openAbout()">About</div>
+  <div class="menuItem" onclick="openNotepad()">Notepad</div>
+</div>
+
+<script>
+var boot = document.getElementById("boot");
+var desktop = document.getElementById("desktop");
+
+function printBoot(text){
+  boot.innerHTML += text + "<br>";
+}
+
+printBoot("Booting cha-syuOS...");
+setTimeout(()=>printBoot("Loading kernel..."),800);
+setTimeout(()=>printBoot("Initializing GUI..."),1600);
+setTimeout(()=>{
+  boot.style.display="none";
+  desktop.style.display="block";
+},2400);
+
+function createWindow(title,content){
+  var win=document.createElement("div");
+  win.className="window";
+  win.innerHTML=
+  "<div class='titlebar'>"+title+
+  "<span style='cursor:pointer' onclick='this.parentElement.parentElement.remove()'>✖</span></div>"+
+  "<div class='content'>"+content+"</div>";
+  desktop.appendChild(win);
+}
+
+function openAbout(){
+  createWindow("About","Welcome to cha-syuOS v0.5");
+}
+
+function openNotepad(){
+  createWindow("Notepad","<textarea style='width:100%;height:150px;'></textarea>");
+}
+
+function toggleStart(){
+  var menu=document.getElementById("startMenu");
+  menu.style.display = menu.style.display==="block"?"none":"block";
+}
 </script>
 
 </body>
