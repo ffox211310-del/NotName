@@ -9,11 +9,16 @@
 
 <div id="screen" style="padding:10px;"></div>
 
+<input id="cmd" autofocus 
+style="width:100%;background:black;color:lime;border:none;outline:none;font-family:monospace;display:none;">
+
 <script>
 var screen = document.getElementById("screen");
+var cmd = document.getElementById("cmd");
 
 function print(text){
   screen.innerHTML += text + "<br>";
+  window.scrollTo(0, document.body.scrollHeight);
 }
 
 print("Booting system...");
@@ -29,9 +34,32 @@ setTimeout(function(){
 setTimeout(function(){
   print("");
   print("=== cha-syuOS ===");
-  print("System Ready.");
+  print("Type 'help' to begin.");
+  cmd.style.display = "block";
+  cmd.focus();
 }, 2400);
 
+cmd.addEventListener("keydown", function(e){
+  if(e.key === "Enter"){
+    var input = cmd.value;
+    print("> " + input);
+
+    if(input === "help"){
+      print("Commands: help, about, clear");
+    }
+    else if(input === "about"){
+      print("cha-syuOS running on Web Kernel.");
+    }
+    else if(input === "clear"){
+      screen.innerHTML = "";
+    }
+    else{
+      print("Command not found.");
+    }
+
+    cmd.value = "";
+  }
+});
 </script>
 
 </body>
