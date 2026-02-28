@@ -9,52 +9,30 @@
 
 <div id="screen" style="padding:10px;"></div>
 
-<input id="cmd" autofocus 
-style="width:100%;background:black;color:lime;border:none;outline:none;font-family:monospace;display:none;">
-
 <script>
 const screen = document.getElementById("screen");
-const cmd = document.getElementById("cmd");
 
 function print(text){
   screen.innerHTML += text + "<br>";
-  window.scrollTo(0, document.body.scrollHeight);
 }
 
 function boot(){
   print("Booting system...");
-  setTimeout(()=>print("Loading kernel..."),500);
-  setTimeout(()=>print("Initializing modules..."),1000);
-  setTimeout(()=>{
+  
+  setTimeout(function(){
+    print("Loading kernel...");
+  }, 800);
+
+  setTimeout(function(){
+    print("Initializing modules...");
+  }, 1600);
+
+  setTimeout(function(){
     print("");
     print("=== cha-syuOS ===");
-    print("Type 'help' to begin.");
-    cmd.style.display="block";
-    cmd.focus();
-  },1500);
+    print("System Ready.");
+  }, 2400);
 }
-
-cmd.addEventListener("keydown", function(e){
-  if(e.key === "Enter"){
-    let input = cmd.value;
-    print("> " + input);
-
-    if(input === "help"){
-      print("Commands: help, about, clear");
-    }
-    else if(input === "about"){
-      print("cha-syuOS running on Web Kernel.");
-    }
-    else if(input === "clear"){
-      screen.innerHTML = "";
-    }
-    else{
-      print("Command not found.");
-    }
-
-    cmd.value = "";
-  }
-});
 
 boot();
 </script>
