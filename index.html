@@ -5,37 +5,10 @@
 <title>cha-syuOS</title>
 </head>
 
-<body style="margin:0;background:black;color:lime;font-family:monospace;">
+<body style="background:black;color:lime;font-family:monospace;">
 
-<div id="screen" style="padding:10px;"></div>
-
-<script>
-const screen = document.getElementById("screen");
-
-function print(text){
-  screen.innerHTML += text + "<br>";
-}
-
-function boot(){
-  print("Booting system...");
-  
-  setTimeout(function(){
-    print("Loading kernel...");
-  }, 800);
-
-  setTimeout(function(){
-    print("Initializing modules...");
-  }, 1600);
-
-  setTimeout(function(){
-    print("");
-    print("=== cha-syuOS ===");
-    print("System Ready.");
-  }, 2400);
-}
-
-boot();
-</script>
+Boot test<br>
+Hello world<br>
 
 </body>
 </html>
