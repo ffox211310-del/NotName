@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="manifest" href="manifest.json">
+  <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#000000">
 <meta charset="UTF-8">
 <title>cha-syuOS v0.5</title>
+<meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 
@@ -38,9 +39,8 @@ body{
   animation:bootFade 4s ease forwards;
 }
 #boot img{
-  max-width:400px;
+  max-width:1200px;
 }
-
 @keyframes bootFade{
   0%{opacity:0;}
   20%{opacity:1;}
@@ -68,23 +68,37 @@ body{
   color:white;
 }
 
+/* Icons */
+.iconArea{
+  display:flex;
+  padding:20px;
+}
+.icon{
+  width:80px;
+  text-align:center;
+  cursor:pointer;
+  margin:20px;
+}
+
 /* App Icon */
 .app-icon {
-  display:inline-flex;
-  flex-direction:column;
-  align-items:center;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
   width:80px;
   margin:20px;
-  cursor:pointer;
+  cursor: pointer;
 }
 .app-icon .icon {
-  font-size:40px;
-  line-height:1;
+  font-size: 40px;
+  line-height: 1;
+  text-align: center;
 }
 .app-icon .label {
-  font-size:14px;
-  margin-top:4px;
-  color:white;
+  font-size: 14px;
+  margin-top: 4px;
+  text-align: center;
+  color: white;
 }
 
 /* Taskbar */
@@ -99,85 +113,188 @@ body{
   justify-content:space-between;
   padding:0 20px;
 }
+#startBtn{cursor:pointer;}
 #clock{font-size:20px;}
 
-/* Game */
+/* Start Menu */
+#startMenu{
+  position:absolute;
+  bottom:50px;
+  left:20px;
+  background:rgba(0,0,0,0.8);
+  padding:10px;
+  display:none;
+}
+
+/* Window */
+.window{
+  position:absolute;
+  top:120px;
+  left:120px;
+  width:300px;
+  background:rgba(255,255,255,0.1);
+  padding:15px;
+  border-radius:10px;
+}
+
+/* Game Container */
 #gameContainer{
   display:none;
   position:absolute;
-  width:100%;
-  height:100%;
+  top:0; left:0;
+  width:100%; height:100%;
   background:black;
 }
+#gameContainer canvas{
+  display:block;
+}
+
+/* Buttons */
+#restartBtn, #homeBtn{
+  position:absolute;
+  left:50%;
+  padding:15px 30px;
+  font-size:30px;
+  cursor:pointer;
+  display:none;
+  transform:translate(-50%,0);
+}
+#restartBtn{top:60%;}
+#homeBtn{top:70%;}
 </style>
 </head>
 
 <body>
-
 <div id="terminalBoot"></div>
 
-<!-- 🔥 ロゴ固定 -->
 <div id="boot">
-  <img src="os-logo.PNG">
+  <img id="logoImage" src="">
 </div>
 
 <div id="login">
   <h2>Login to cha-syuOS v0.5</h2>
   <input type="password" id="password" placeholder="Password">
   <button onclick="login()">Login</button>
+  <br><br>
+  ロゴ変更:
+  <input type="file" accept="image/*" onchange="setLogo(event)">
 </div>
 
 <div id="desktop">
-
+  <!-- Gameアイコン -->
   <div class="app-icon" onclick="openGame()">
     <div class="icon">🟩</div>
     <div class="label">Game</div>
   </div>
 
+  <div class="iconArea">
+    <div class="icon" onclick="openNotepad()">📝<br>Note</div>
+  </div>
+
   <div id="taskbar">
-    <div>Start</div>
+    <div id="startBtn" onclick="toggleStart()">Start</div>
     <div id="clock"></div>
   </div>
 
+  <div id="startMenu">
+    <div onclick="openNotepad()">Notepad</div>
+    <div onclick="openAbout()">About cha-syuOS</div>
+    <div>
+      壁紙変更
+      <input type="file" accept="image/*" onchange="setWallpaper(event)">
+    </div>
+  </div>
 </div>
 
+<!-- Game Container -->
 <div id="gameContainer">
   <canvas id="gameCanvas"></canvas>
+  <button id="restartBtn">リスタート</button>
+  <button id="homeBtn">ホームに戻る</button>
 </div>
 
 <script>
-var terminal=document.getElementById("terminalBoot");
-var boot=document.getElementById("boot");
-var loginScreen=document.getElementById("login");
-var desktop=document.getElementById("desktop");
+// ------------------ 起動アニメ ------------------
+window.onload = function(){
+  var savedLogo = localStorage.getItem("logo");
+  if(savedLogo){document.getElementById("logoImage").src = savedLogo;}
+};
 
-/* Boot sequence */
-terminal.innerHTML="Initializing cha-syuOS v0.5...<br>";
+var terminal = document.getElementById("terminalBoot");
+var boot = document.getElementById("boot");
+var loginScreen = document.getElementById("login");
+var desktop = document.getElementById("desktop");
+
+terminal.innerHTML = "Initializing cha-syuOS v0.5...<br>";
 setTimeout(()=>{terminal.innerHTML+="Loading kernel...<br>";},500);
 setTimeout(()=>{terminal.innerHTML+="Starting services...<br>";},1000);
 setTimeout(()=>{
   terminal.style.display="none";
   boot.style.display="flex";
 },2000);
-
 setTimeout(()=>{
   boot.style.display="none";
   loginScreen.style.display="flex";
 },6000);
 
-/* Login */
+// ------------------ Login ------------------
 function login(){
   if(document.getElementById("password").value==="ramen"){
     loginScreen.style.display="none";
     desktop.style.display="block";
-  }else{
-    alert("Wrong password");
+    loadSaved();
+  }else{alert("Wrong password");}
+}
+
+// ------------------ Windows ------------------
+function createWindow(title,content){
+  var win=document.createElement("div");
+  win.className="window";
+  win.innerHTML="<b>"+title+"</b><br>"+content+"<br><button onclick='this.parentElement.remove()'>Close</button>";
+  desktop.appendChild(win);
+}
+
+function openNotepad(){
+  var content=localStorage.getItem("note")||"";
+  createWindow("Notepad","<textarea id='noteArea' style='width:100%;height:100px;'>"+content+"</textarea><br><button onclick='saveNote()'>Save</button>");
+}
+
+function saveNote(){
+  localStorage.setItem("note",document.getElementById("noteArea").value);
+  alert("Saved!");
+}
+
+// ------------------ Wallpaper & Logo ------------------
+function setWallpaper(event){
+  if(desktop.style.display === "block"){ // デスクトップ表示中のみ
+    var reader=new FileReader();
+    reader.onload=function(){
+      desktop.style.background="url("+reader.result+") center/cover";
+      localStorage.setItem("wall", reader.result);
+    };
+    reader.readAsDataURL(event.target.files[0]);
   }
 }
 
-/* Clock */
+function setLogo(event){
+  var reader=new FileReader();
+  reader.onload=function(){
+    document.getElementById("logoImage").src=reader.result;
+    localStorage.setItem("logo",reader.result);
+  };
+  reader.readAsDataURL(event.target.files[0]);
+}
+
+function loadSaved(){
+  var savedWall=localStorage.getItem("wall");
+  if(savedWall){desktop.style.background="url("+savedWall+") center/cover";}
+  var savedLogo=localStorage.getItem("logo");
+  if(savedLogo){document.getElementById("logoImage").src=savedLogo;}
+}
+
+// ------------------ Clock ------------------
 function updateClock(){
-  var now=new Date();
+  var now = new Date();
   document.getElementById("clock").innerHTML=
     now.getFullYear()+"/"+
     String(now.getMonth()+1).padStart(2,'0')+"/"+
@@ -187,7 +304,108 @@ function updateClock(){
 }
 setInterval(updateClock,1000);
 updateClock();
-</script>
 
+// ------------------ Start Menu ------------------
+function toggleStart(){
+  var menu=document.getElementById("startMenu");
+  menu.style.display=(menu.style.display==="block")?"none":"block";
+}
+
+function openAbout(){alert("cha-syuOS v0.5\nMade by FFox\nSpecial thanks\nChatGPT&Github");}
+
+// ------------------ ゲーム統合 ------------------
+const gameContainer = document.getElementById("gameContainer");
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const restartBtn = document.getElementById("restartBtn");
+const homeBtn = document.getElementById("homeBtn");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let player, enemies, score, gameOver;
+
+function initGame(){
+  player = { x:100, y:100, size:40 };
+  enemies = [];
+  for(let i=0;i<30;i++){
+    enemies.push({
+      x: Math.random()*canvas.width,
+      y: Math.random()*canvas.height,
+      size:40,
+      speed:1 + Math.random()*2
+    });
+  }
+  score = 0;
+  gameOver = false;
+  restartBtn.style.display = "none";
+  homeBtn.style.display = "none";
+}
+
+function draw(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  if(gameOver){
+    ctx.fillStyle="white";
+    ctx.font="80px serif";
+    ctx.fillText("どんまい 笑", canvas.width/2 - 200, canvas.height/2);
+    restartBtn.style.display = "block";
+    homeBtn.style.display = "block";
+    return;
+  }
+
+  ctx.fillStyle="lime";
+  ctx.fillRect(player.x,player.y,player.size,player.size);
+
+  enemies.forEach(enemy=>{
+    if(player.x>enemy.x) enemy.x += enemy.speed;
+    if(player.x<enemy.x) enemy.x -= enemy.speed;
+    if(player.y>enemy.y) enemy.y += enemy.speed;
+    if(player.y<enemy.y) enemy.y -= enemy.speed;
+
+    ctx.fillStyle="red";
+    ctx.fillRect(enemy.x,enemy.y,enemy.size,enemy.size);
+
+    if(player.x<enemy.x+enemy.size &&
+       player.x+player.size>enemy.x &&
+       player.y<enemy.y+enemy.size &&
+       player.y+player.size>enemy.y){
+      gameOver = true;
+    }
+  });
+
+  ctx.fillStyle="white";
+  ctx.font="40px Arial";
+  ctx.fillText("Score: "+score,20,30);
+
+  requestAnimationFrame(draw);
+}
+
+canvas.addEventListener("touchstart",e=>{
+  if(!gameOver){
+    player.x = e.touches[0].clientX - player.size/2;
+    player.y = e.touches[0].clientY - player.size/2;
+    score++;
+  }
+});
+
+restartBtn.addEventListener("click", ()=>{
+  initGame();
+  draw();
+});
+
+homeBtn.addEventListener("click", ()=>{
+  gameContainer.style.display="none";
+  desktop.style.display="block";
+});
+
+function openGame(){
+  desktop.style.display="none";
+  gameContainer.style.display="block";
+  initGame();
+  draw();
+}
+</script>
 </body>
 </html>
+
