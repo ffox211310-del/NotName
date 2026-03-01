@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>cha-syu Game</title>
+<style>
+body{
+  margin:0;
+  overflow:hidden;
+  background:black;
+}
+canvas{
+  display:block;
+}
+#homeBtn{
+  position:absolute;
+  left:50%;
+  top:70%;
+  transform:translateX(-50%);
+  padding:15px 30px;
+  display:none;
+}
+</style>
+</head>
+<body>
+
+<canvas id="gameCanvas"></canvas>
+<button id="homeBtn">ホームに戻る</button>
+
+<script>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const homeBtn = document.getElementById("homeBtn");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let player, enemies, score, gameOver;
+
+function initGame(){
+  player = { x:100, y:100, size:40 };
+  enemies = [];
+  for(let i=0;i<20;i++){
+    enemies.push({
+      x: Math.random()*canvas.width,
+      y: Math.random()*canvas.height,
+      size:40,
+      speed:1 + Math.random()*2
+    });
+  }
+  score = 0;
+  gameOver = false;
+  homeBtn.style.display="none";
+}
+
+function draw(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  if(gameOver){
+    ctx.fillStyle="white";
+    ctx.font="50px Arial";
+    ctx.fillText("GAME OVER", canvas.width/2-150, canvas.height/2);
+    homeBtn.style.display="block";
+    return;
+  }
+
+  ctx.fillStyle="lime";
+  ctx.fillRect(player.x, player.y, player.size, player.size);
+
+  enemies.forEach(e=>{
+    if(player.x>e.x) e.x+=e.speed;
+    if(player.x<e.x) e.x-=e.speed;
+    if(player.y>e.y) e.y+=e.speed;
+    if(player.y<e.y) e.y-=e.speed;
+
+    ctx.fillStyle="red";
+    ctx.fillRect(e.x,e.y,e.size,e.size);
+
+    if(player.x<e.x+e.size &&
+       player.x+player.size>e.x &&
+       player.y<e.y+e.size &&
+       player.y+player.size>e.y){
+      gameOver=true;
+    }
+  });
+
+  ctx.fillStyle="white";
+  ctx.font="30px Arial";
+  ctx.fillText("Score: "+score,20,40);
+
+  requestAnimationFrame(draw);
+}
+
+canvas.addEventListener("touchstart",e=>{
+  if(!gameOver){
+    player.x = e.touches[0].clientX - player.size/2;
+    player.y = e.touches[0].clientY - player.size/2;
+    score++;
+  }
+});
+
+homeBtn.onclick = ()=>{
+  window.location.href = "index.html";
+};
+
+initGame();
+draw();
+</script>
+
+</body>
+</html>
