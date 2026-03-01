@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 
-<!-- これが超重要 -->
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<!-- ✅ これが最重要 -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#000000">
@@ -14,6 +14,11 @@
 <title>cha-syuOS v0.5</title>
 
 <style>
+
+*{
+  box-sizing:border-box;
+}
+
 body{
   margin:0;
   font-family:Segoe UI, sans-serif;
@@ -21,7 +26,11 @@ body{
   background:black;
 }
 
-/* Boot Animation */
+/* 入力ズーム防止の最重要ポイント */
+input, textarea, button{
+  font-size:16px !important;
+}
+
 #terminalBoot{
   position:fixed;
   width:100%;
@@ -41,7 +50,10 @@ body{
   opacity:0;
   animation:bootFade 4s ease forwards;
 }
-#boot img{ max-width:80%; }
+
+#boot img{
+  max-width:90%;
+}
 
 @keyframes bootFade{
   0%{opacity:0;}
@@ -55,15 +67,12 @@ body{
   display:none;
   height:100vh;
   background:linear-gradient(135deg,#141e30,#243b55);
+  display:flex;
   justify-content:center;
   align-items:center;
   flex-direction:column;
   color:white;
-}
-
-/* iPhoneズーム対策 */
-input, textarea{
-  font-size:16px;
+  padding:20px;
 }
 
 /* Desktop */
@@ -79,12 +88,39 @@ input, textarea{
 .window{
   position:absolute;
   top:120px;
-  left:120px;
-  width:300px;
+  left:50%;
+  transform:translateX(-50%);
+  width:90%;
+  max-width:400px;
   background:rgba(255,255,255,0.1);
   padding:15px;
   border-radius:10px;
 }
+
+#taskbar{
+  position:absolute;
+  bottom:0;
+  width:100%;
+  height:50px;
+  background:rgba(0,0,0,0.6);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 20px;
+}
+
+#startBtn{cursor:pointer;}
+#clock{font-size:18px;}
+
+#startMenu{
+  position:absolute;
+  bottom:50px;
+  left:20px;
+  background:rgba(0,0,0,0.8);
+  padding:10px;
+  display:none;
+}
+
 </style>
 </head>
 
@@ -97,8 +133,9 @@ input, textarea{
 </div>
 
 <div id="login">
-  <h2>Login to cha-syuOS</h2>
+  <h2>Login to cha-syuOS v0.5</h2>
   <input type="password" id="password" placeholder="Password">
+  <br><br>
   <button onclick="login()">Login</button>
   <br><br>
   ロゴ変更:
@@ -106,19 +143,31 @@ input, textarea{
 </div>
 
 <div id="desktop">
-  <div onclick="openNotepad()" style="padding:20px;cursor:pointer;">
-    📝 Note
+  <div style="padding:20px;">
+    <div onclick="openNotepad()" style="cursor:pointer;">📝 Note</div>
+  </div>
+
+  <div id="taskbar">
+    <div id="startBtn" onclick="toggleStart()">Start</div>
+    <div id="clock"></div>
+  </div>
+
+  <div id="startMenu">
+    <div onclick="openNotepad()">Notepad</div>
+    <div onclick="openAbout()">About</div>
   </div>
 </div>
 
 <script>
-const terminal=document.getElementById("terminalBoot");
-const boot=document.getElementById("boot");
-const loginScreen=document.getElementById("login");
-const desktop=document.getElementById("desktop");
+
+// 起動演出
+var terminal = document.getElementById("terminalBoot");
+var boot = document.getElementById("boot");
+var loginScreen = document.getElementById("login");
+var desktop = document.getElementById("desktop");
 
 terminal.innerHTML="Initializing cha-syuOS...<br>";
-setTimeout(()=>{terminal.innerHTML+="Loading kernel...<br>";},500);
+setTimeout(()=>{terminal.innerHTML+="Loading kernel...<br>";},800);
 setTimeout(()=>{
   terminal.style.display="none";
   boot.style.display="flex";
@@ -126,8 +175,9 @@ setTimeout(()=>{
 setTimeout(()=>{
   boot.style.display="none";
   loginScreen.style.display="flex";
-},6000);
+},5000);
 
+// Login
 function login(){
   if(document.getElementById("password").value==="ramen"){
     loginScreen.style.display="none";
@@ -137,20 +187,43 @@ function login(){
   }
 }
 
+// Notepad
 function openNotepad(){
-  let win=document.createElement("div");
+  var content=localStorage.getItem("note")||"";
+  var win=document.createElement("div");
   win.className="window";
-  win.innerHTML="<b>Notepad</b><br><textarea style='width:100%;height:100px;'></textarea><br><button onclick='this.parentElement.remove()'>Close</button>";
+  win.innerHTML=
+    "<b>Notepad</b><br><br>"+
+    "<textarea id='noteArea' style='width:100%;height:120px;'>"+content+"</textarea><br><br>"+
+    "<button onclick='saveNote()'>Save</button> "+
+    "<button onclick='this.parentElement.remove()'>Close</button>";
   desktop.appendChild(win);
 }
 
-function setLogo(event){
-  let reader=new FileReader();
-  reader.onload=function(){
-    document.getElementById("logoImage").src=reader.result;
-  };
-  reader.readAsDataURL(event.target.files[0]);
+function saveNote(){
+  localStorage.setItem("note",document.getElementById("noteArea").value);
+  alert("Saved!");
 }
+
+function toggleStart(){
+  var menu=document.getElementById("startMenu");
+  menu.style.display=(menu.style.display==="block")?"none":"block";
+}
+
+function openAbout(){
+  alert("cha-syuOS v0.5\nMade by FFox");
+}
+
+// 時計
+function updateClock(){
+  var now=new Date();
+  document.getElementById("clock").innerHTML=
+  now.getHours().toString().padStart(2,'0')+":"+
+  now.getMinutes().toString().padStart(2,'0');
+}
+setInterval(updateClock,1000);
+updateClock();
+
 </script>
 
 </body>
