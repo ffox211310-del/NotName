@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -162,6 +161,29 @@ input, textarea, button{
 
 <div id="desktop">
 
+<!-- ===== GAME CONTAINER 追加 ===== -->
+<div id="gameContainer" style="
+  display:none;
+  position:absolute;
+  top:0; left:0;
+  width:100%; height:100%;
+  background:black;
+  z-index:999;
+">
+  <canvas id="gameCanvas"></canvas>
+  <button id="restartBtn" style="
+    position:absolute; left:50%; top:60%;
+    transform:translateX(-50%);
+    padding:15px 30px; display:none;
+  ">リスタート</button>
+
+  <button id="homeBtn" style="
+    position:absolute; left:50%; top:70%;
+    transform:translateX(-50%);
+    padding:15px 30px; display:none;
+  ">ホームに戻る</button>
+</div>
+
   <div class="iconArea">
     <div class="app-icon" onclick="openNotepad()">
       <div class="icon">📝</div>
@@ -276,10 +298,10 @@ function toggleStart(){
 }
 
 function openAbout(){
-  alert("cha-syuOS v0.5Mobile\nMade by FFox");
+  alert("cha-syuOS v0.6\nMade by FFox");
 }
 
-
+// ===== ゲーム完全統合 追加部分 =====
 
 const gameContainer = document.getElementById("gameContainer");
 const canvas = document.getElementById("gameCanvas");
@@ -295,7 +317,7 @@ let player, enemies, score, gameOver;
 function initGame(){
   player = { x:100, y:100, size:40 };
   enemies = [];
-  for(let i=0;i<30;i++){
+  for(let i=0;i<20;i++){
     enemies.push({
       x: Math.random()*canvas.width,
       y: Math.random()*canvas.height,
@@ -314,36 +336,36 @@ function draw(){
 
   if(gameOver){
     ctx.fillStyle="white";
-    ctx.font="80px serif";
-    ctx.fillText("どんまい 笑", canvas.width/2 - 200, canvas.height/2);
-    restartBtn.style.display = "block";
-    homeBtn.style.display = "block";
+    ctx.font="50px Arial";
+    ctx.fillText("GAME OVER", canvas.width/2-150, canvas.height/2);
+    restartBtn.style.display="block";
+    homeBtn.style.display="block";
     return;
   }
 
   ctx.fillStyle="lime";
-  ctx.fillRect(player.x,player.y,player.size,player.size);
+  ctx.fillRect(player.x, player.y, player.size, player.size);
 
-  enemies.forEach(enemy=>{
-    if(player.x>enemy.x) enemy.x += enemy.speed;
-    if(player.x<enemy.x) enemy.x -= enemy.speed;
-    if(player.y>enemy.y) enemy.y += enemy.speed;
-    if(player.y<enemy.y) enemy.y -= enemy.speed;
+  enemies.forEach(e=>{
+    if(player.x>e.x) e.x+=e.speed;
+    if(player.x<e.x) e.x-=e.speed;
+    if(player.y>e.y) e.y+=e.speed;
+    if(player.y<e.y) e.y-=e.speed;
 
     ctx.fillStyle="red";
-    ctx.fillRect(enemy.x,enemy.y,enemy.size,enemy.size);
+    ctx.fillRect(e.x,e.y,e.size,e.size);
 
-    if(player.x<enemy.x+enemy.size &&
-       player.x+player.size>enemy.x &&
-       player.y<enemy.y+enemy.size &&
-       player.y+player.size>enemy.y){
-      gameOver = true;
+    if(player.x<e.x+e.size &&
+       player.x+player.size>e.x &&
+       player.y<e.y+e.size &&
+       player.y+player.size>e.y){
+      gameOver=true;
     }
   });
 
   ctx.fillStyle="white";
-  ctx.font="40px Arial";
-  ctx.fillText("Score: "+score,20,30);
+  ctx.font="30px Arial";
+  ctx.fillText("Score: "+score,20,40);
 
   requestAnimationFrame(draw);
 }
@@ -356,16 +378,17 @@ canvas.addEventListener("touchstart",e=>{
   }
 });
 
-restartBtn.addEventListener("click", ()=>{
+restartBtn.onclick = ()=>{
   initGame();
   draw();
-});
+};
 
-homeBtn.addEventListener("click", ()=>{
+homeBtn.onclick = ()=>{
   gameContainer.style.display="none";
   desktop.style.display="block";
-});
+};
 
+// 既存の openGame を上書き
 function openGame(){
   desktop.style.display="none";
   gameContainer.style.display="block";
@@ -373,6 +396,6 @@ function openGame(){
   draw();
 }
 </script>
+
 </body>
 </html>
-
