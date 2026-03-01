@@ -387,16 +387,10 @@ homeBtn.onclick = ()=>{
 };
 
 // 既存の openGame を上書き
-function openGame(){
-  desktop.style.display="none";
-  gameContainer.style.display="block";
-
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-  initGame();
-  draw();
+  function openGame(){
+  window.location.href = "game.html";
 }
+
 </script>
 
 </body>
