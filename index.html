@@ -197,6 +197,10 @@ body{
   <div id="startMenu">
     <div onclick="openNotepad()">Notepad</div>
     <div onclick="openAbout()">About cha-syuOS</div>
+    <div>
+      壁紙変更
+      <input type="file" accept="image/*" onchange="setWallpaper(event)">
+    </div>
   </div>
 </div>
 
@@ -260,12 +264,14 @@ function saveNote(){
 
 // ------------------ Wallpaper & Logo ------------------
 function setWallpaper(event){
-  var reader=new FileReader();
-  reader.onload=function(){
-    desktop.style.background="url("+reader.result+") center/cover";
-    localStorage.setItem("wall",reader.result);
-  };
-  reader.readAsDataURL(event.target.files[0]);
+  if(desktop.style.display === "block"){ // デスクトップ表示中のみ
+    var reader=new FileReader();
+    reader.onload=function(){
+      desktop.style.background="url("+reader.result+") center/cover";
+      localStorage.setItem("wall", reader.result);
+    };
+    reader.readAsDataURL(event.target.files[0]);
+  }
 }
 
 function setLogo(event){
