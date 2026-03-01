@@ -115,3 +115,43 @@ draw();
 </script>
 </body>
 </html>
+
+<!-- リスタートボタンの下に追加 -->
+<button id="homeBtn" style="
+  position:absolute;
+  left:50%;
+  top:70%;
+  transform:translate(-50%,-50%);
+  padding:15px 30px;
+  font-size:30px;
+  display:none;
+  cursor:pointer;
+">ホームに戻る</button>
+
+<script>
+const homeBtn = document.getElementById("homeBtn");
+const restartBtn = document.getElementById("restartBtn");
+
+// ゲームオーバー時
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (gameOver) {
+    ctx.fillStyle = "white";
+    ctx.font = "80px serif";
+    ctx.fillText("どんまい 笑", canvas.width/2 - 200, canvas.height/2);
+
+    // ボタン表示
+    restartBtn.style.display = "block";
+    homeBtn.style.display = "block"; // ←ホームボタンも表示
+    return;
+  }
+
+  // （残りの描画処理は同じ）
+}
+
+// ホームボタン押したらindex.htmlに戻る
+homeBtn.addEventListener("click", () => {
+  window.location.href = "index.html";
+});
+</script>
