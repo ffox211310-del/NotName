@@ -3,9 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <title>Chaos Mode</title>
+  <style>
+    #restartBtn {
+      position: absolute;
+      left: 50%;
+      top: 60%;
+      transform: translate(-50%, -50%);
+      padding: 15px 30px;
+      font-size: 30px;
+      display: none; /* 最初は非表示 */
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body style="margin:0; overflow:hidden; background:black;">
 <canvas id="game"></canvas>
+<button id="restartBtn">リスタート</button>
 
 <script>
 const canvas = document.getElementById("game");
@@ -14,21 +27,26 @@ const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-let player = { x: 100, y: 100, size: 40 };
+let player, enemies, score, gameOver;
 
-let enemies = [];
+function initGame() {
+  player = { x: 100, y: 100, size: 40 };
 
-for (let i = 0; i < 30; i++) {
-  enemies.push({
-    x: Math.random() * canvas.width,
-    y: Math.random() * canvas.height,
-    size: 40,
-    speed: 1 + Math.random() * 2
-  });
+  enemies = [];
+  for (let i = 0; i < 30; i++) {
+    enemies.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      size: 40,
+      speed: 1 + Math.random() * 2
+    });
+  }
+
+  score = 0;
+  gameOver = false;
+
+  document.getElementById("restartBtn").style.display = "none";
 }
-
-let score = 0;
-let gameOver = false;
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -37,6 +55,9 @@ function draw() {
     ctx.fillStyle = "white";
     ctx.font = "80px serif";
     ctx.fillText("どんまい 笑", canvas.width/2 - 200, canvas.height/2);
+
+    // ボタンを表示
+    document.getElementById("restartBtn").style.display = "block";
     return;
   }
 
@@ -73,6 +94,7 @@ function draw() {
   requestAnimationFrame(draw);
 }
 
+// タッチでプレイヤー移動
 document.addEventListener("touchstart", e => {
   if (!gameOver) {
     player.x = e.touches[0].clientX - player.size/2;
@@ -81,6 +103,14 @@ document.addEventListener("touchstart", e => {
   }
 });
 
+// リスタートボタン処理
+document.getElementById("restartBtn").addEventListener("click", () => {
+  initGame();
+  draw();
+});
+
+// 初回ゲーム開始
+initGame();
 draw();
 </script>
 </body>
