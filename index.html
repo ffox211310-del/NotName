@@ -309,8 +309,6 @@ const ctx = canvas.getContext("2d");
 const restartBtn = document.getElementById("restartBtn");
 const homeBtn = document.getElementById("homeBtn");
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
 
 let player, enemies, score, gameOver;
 
@@ -392,6 +390,10 @@ homeBtn.onclick = ()=>{
 function openGame(){
   desktop.style.display="none";
   gameContainer.style.display="block";
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
   initGame();
   draw();
 }
