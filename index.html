@@ -173,7 +173,7 @@ body{
 
 <div id="login">
   <h2>Login to cha-syuOS v0.5</h2>
-  <input type="password" id="password" placeholder="Password">
+  <input type="password" id="password" placeholder="Password" style="font-size:16px;">
   <button onclick="login()">Login</button>
   <br><br>
   ロゴ変更:
@@ -256,7 +256,7 @@ function createWindow(title,content){
 
 function openNotepad(){
   var content=localStorage.getItem("note")||"";
-  createWindow("Notepad","<textarea id='noteArea' style='width:100%;height:100px;'>"+content+"</textarea><br><button onclick='saveNote()'>Save</button>");
+  createWindow("Notepad","<textarea id='noteArea' style='width:100%;height:100px;font-size:16px;'>"+content+"</textarea><br><button onclick='saveNote()'>Save</button>");
 }
 
 function saveNote(){
